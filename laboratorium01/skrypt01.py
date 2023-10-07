@@ -1,7 +1,5 @@
 #!/usr/bin/python3
 
-#TODO dodac opis zadania
-
 import sys
 
 
@@ -14,6 +12,7 @@ def display(args, show_index):
             print(f'args[{i}] = {val}')
         else:
             print(val)
+    return 0
 
 
 def run(moves, move_descriptions):
@@ -23,7 +22,9 @@ def run(moves, move_descriptions):
             tab.append(move_descriptions[i])
     return tab
 
-print('Start')
-# display(sys.argv, False) # samo wywolanie funckji display
-display(run(sys.argv, MOVES), False) #polaczenie run i display
-print('Stop')
+
+if __name__ == '__main__':
+    print('Start')
+    # display(sys.argv, False) # samo wywolanie funckji display
+    display(run(sys.argv, MOVES), False) #polaczenie run i display
+    print('Stop')
