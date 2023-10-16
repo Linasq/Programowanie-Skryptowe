@@ -9,9 +9,14 @@ def wrongUsageMessage():
 
 parser = argparse.ArgumentParser(prog='skrypt3', formatter_class=argparse.RawDescriptionHelpFormatter, description=textwrap.dedent('''\
         This script can run different functions. Those are provided below:
-        --------------------------------------------------------------------------------
+        +------------------+--------------------+--------------------------------------+
+        |     FUNCTION     | ------------------ |                HELP                  |
+        +------------------+--------------------+--------------------------------------+
             cut                                 remove section from each line of files
             grep                                print lines that match patterns
+
+            all                                 print result of all of the functions below
+
             first_character                     return first character of a word
             first_two_characters                return first two characters
             all_characters_except_first_two     return all chars except first two
@@ -96,5 +101,13 @@ elif args.function[0] == 'merge_characters_and_duplicate':
 
     print(operations.merge_characters_and_duplicate(args.function[1]))
 
+
+elif args.function[0] == 'all':
+    if args.ignore or args.word or args.delimiter or args.fields:
+        print('This function does not take any additional argument')
+        wrongUsageMessage()
+
+    import skrypt1
+    skrypt1.printAll(args.function[1])
 else:
     wrongUsageMessage()
