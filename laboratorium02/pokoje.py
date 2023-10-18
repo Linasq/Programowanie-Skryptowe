@@ -1,5 +1,8 @@
 #!/usr/bin/python3
 
+#TODO cale do przerobki
+# trzeba dobrze pierdolnac jakiegos jsona, a nie sie meczyc z txt
+
 import argparse
 
 # argparse
@@ -63,12 +66,17 @@ Numer pokoju | Goście | Termin |
         # probojemy rezerwowac pokoj
         elif 'book' in x:
             tab = x.split()
-        
-            if len(tab) == 2:
-                pass
-
-            else:
-                syntaxError()
+            
+            for ind, item in enumerate(tab):
+                if ind != 0:
+                    imieTerminy = item.split('|')
+                    imie = imieTerminy[0]
+                    terminy = imieTerminy[1].split(':')
+                    
+                    for term in terminy:
+                        rezerwacja = term.split('(')
+                        nrPokoju = rezerwacja[1][0]
+                        print(f'{imie} {rezerwacja[0]} {nrPokoju}')
 
         # pokazujemy kto i kiedy ma rezerwacje
         elif 'show' in x:
