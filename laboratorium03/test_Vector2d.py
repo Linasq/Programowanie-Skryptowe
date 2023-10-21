@@ -7,10 +7,10 @@ OBJECT2 = Vector2d(-1, 3)
 OBJECT3 = Vector2d(10,10)
 
 def test_getters():
-    assert OBJECT.get_x() == 2
-    assert OBJECT.get_y() == 1
-    assert OBJECT2.get_x() == -1
-    assert OBJECT2.get_y() == 3
+    assert OBJECT.get_x == 2
+    assert OBJECT.get_y == 1
+    assert OBJECT2.get_x == -1
+    assert OBJECT2.get_y == 3
 
 def test_precedes():
     assert OBJECT.precedes(OBJECT2) == False
