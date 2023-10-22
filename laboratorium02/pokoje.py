@@ -3,6 +3,9 @@
 import sys
 
 
+TAB_START = ["1#1.", "2#1.", "2#2.", "2#3.", "3#1.", "3#2."]
+
+
 # funkcja do ladnego wypisania pokoi i gosci
 def printRooms(rooms):
     print('''
@@ -91,6 +94,10 @@ if __name__ == '__main__':
         try:
             x = input('>')
         except EOFError:
+            with open(FILE, 'w') as f:
+                for line in TAB_START:
+                    f.write(line)
+                    f.write('\n')
             exit()
         
         # printowanie stanu pokojow
@@ -182,4 +189,9 @@ if __name__ == '__main__':
                 for line in ROOMS_to_dump:
                     f.write(f'{line}\n')
         else:
+            with open(FILE, 'w') as f:
+                for line in TAB_START:
+                    f.write(line)
+                    f.write('\n')
+
             print('Nieznana komenda')
