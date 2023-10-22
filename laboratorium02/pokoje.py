@@ -1,7 +1,6 @@
 #!/usr/bin/python3
 
 import sys
-import json
 
 
 # funkcja do ladnego wypisania pokoi i gosci
@@ -14,10 +13,18 @@ Numer pokoju | Goście | Termin |
     for k,v in rooms.items():
         print(k, end='')
         for i in v:
+            i = i.strip()
+            tabi = i.split()
             if '1' not in i[0]:
-                print(' '*13, i)
+                if len(tabi) == 1:
+                    print(' '*13, i)
+                else:    
+                    print(' '*13, f'{tabi[0]} {tabi[1]}\t{tabi[2]}')
             else:
-                print(' '*12, i)
+                if len(tabi) == 1:
+                    print(' '*12, i)
+                else:
+                    print(' '*12, f'{tabi[0]} {tabi[1]}\t{tabi[2]}')
         print()
 
 
@@ -36,29 +43,54 @@ Termin               | Numer pokoju |
        print()
 
 
-# funkcja, robiona na szybko w celu wyczyszczenia danych w pliku json
-def clearJSON(file):
-    with open(file, 'w') as f:
-        json.dump({"1":["1. "], "2":["1. ", "2. ", "3. "], "3":["1. ", "2. "]}, f)
+# funkcja przeksztalca tablice 2d w liste, ktorej kluczem jest pierwszy argument zagniezdzonej listy
+def tab_to_dict(tab):
+    dict_r = {'1':[], '2':[], '3':[]}
+    for i in tab:
+        if ['\n'] == i:
+            break
+        dict_r[i[0]].append(' '.join(i[1::]))
+
+    return dict_r
+
+# funckja majaca na celu zamienic slownik w tablice stringow, gotowa do wpisania do pliku
+def dict_to_list(dict_r):
+    tab_temp = []
+    for k,v in dict_r.items():
+        for vv in v:
+            values_dict = vv.split(' ')
+            temp = f'{k}#'
+            temp += '#'.join(values_dict)
+            tab_temp.append(temp)
+
+    return tab_temp
+
+def fill_rooms():
+    return {'1':['1.'], '2':['1.', '2.', '3.'], '3':['1.', '2.']}
 
 
 if __name__ == '__main__':
     FILE = sys.argv[1]
     
-    #czyscimy plik json przy kazdym uruchomieniu
-    clearJSON(FILE)
+    # komenda sluzaca do wyczyszczenia syfu z poprzedniego uruchomienia programu
+    # docelowo powinna byc na koncu
+    open(FILE,'w').close()
 
     x = 'Zaczynamy zabawe'
     while x != '':
-        # w zmiennej rooms przechowujemy dane z jsona
         with open(FILE, 'r') as f:
-            ROOMS = json.load(f)
+            ROOMS_tab = f.readlines()
+        ROOMS_tab = [i.split('#') for i in ROOMS_tab]
+        
+        # by nie niszczyc calego programu jest dodana funkcja, ktora powinna nam dodac troche linijek, ale dzieki temu zachowamy strukture
+        ROOMS = tab_to_dict(ROOMS_tab)
+        if ROOMS == {'1':[], '2':[], '3':[]}:
+            ROOMS = fill_rooms()
 
         #pobieramy kolejne linie od usera
         try:
             x = input('>')
         except EOFError:
-            print()
             exit()
         
         # printowanie stanu pokojow
@@ -109,6 +141,7 @@ if __name__ == '__main__':
             if '|' not in x:
                 print('Niepoprawny format komendy')
                 break
+
             whatReservations=x[4::].split()
             dictTemp = {}
 
@@ -129,20 +162,24 @@ if __name__ == '__main__':
 
                 # ta sluzy do wydobycia daty
                 whenDate = [i.split('(')[0] for i in reservations]
+
                 ctr = 0
                 for number in noRoom:
                     if int(number) <= 3:
                         for ind,value in enumerate(ROOMS[number]):
-                            if len(value) <= 3:
-                                ROOMS[number][ind] = f'{value}{guest}\t{whenDate[ctr]}'
+                            if len(value) <= 8:
+                                value = value.strip()
+                                ROOMS[number][ind] = f'{value} {guest} {whenDate[ctr]}'
                                 ctr+=1
                                 break
                     else:
                         print(f'Pokoj nr {number} nie istnieje')
                         break
+                
+            ROOMS_to_dump = dict_to_list(ROOMS)
 
             with open(FILE, 'w') as f:
-                json.dump(ROOMS, f)
-
+                for line in ROOMS_to_dump:
+                    f.write(f'{line}\n')
         else:
             print('Nieznana komenda')
