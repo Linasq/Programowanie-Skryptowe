@@ -17,17 +17,26 @@ class Animal:
         else: return False
 
     def move(self, direction: MoveDirection, validator: IMoveValidator) -> None:
-        if direction.name == MoveDirection.RIGHT.name:
-            self.orientation = self.orientation.next()
-        
-        elif direction.name == MoveDirection.LEFT.name:
-            self.orientation = self.orientation.previous()
-        
-        if direction.name == MoveDirection.FORWARD.name or direction.name == MoveDirection.BACKWARD.name:
-            if direction.name == MoveDirection.FORWARD.name:
-                target: Vector2d = self.position.add(self.orientation.toUnitVector())
-            else:
-                target = self.position.subtract(self.orientation.toUnitVector())
+        # slownik zawierajacy kierunki jako klucze i akcje jako wartosci
+        direction_actions = {
+                MoveDirection.RIGHT.name: lambda: self.orientation.next(),
+                MoveDirection.LEFT.name: lambda: self.orientation.previous(),
+                MoveDirection.FORWARD.name: lambda: self.position.add(self.orientation.toUnitVector()),
+                MoveDirection.BACKWARD.name: lambda: self.position.subtract(self.orientation.toUnitVector())
+        }
 
-            if validator.canMoveTo(target):
-                self.position = target
+        # dostajemy odpowiednia akcje
+        action = direction_actions.get(direction.name)
+
+        if action:
+            # odpalamy dana funkcje
+            target = action()
+
+            # jesli idziemy do przodu lub do tylu
+            if direction.name in [MoveDirection.BACKWARD.name, MoveDirection.FORWARD.name]:
+                if validator.canMoveTo(target):
+                    self.position = target
+
+            # jesli sie obracamy
+            else:
+                self.orientation = target

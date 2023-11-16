@@ -6,19 +6,9 @@ from model.interface import IWorldMap
 class OptionsParser:
     @staticmethod
     def toList(tab):
-        returnTab = []
-        for i in tab:
-            if i == 'f':
-                returnTab.append(MoveDirection.FORWARD)
-            elif i == 'b':
-                returnTab.append(MoveDirection.BACKWARD)
-            elif i == 'l':
-                returnTab.append(MoveDirection.LEFT)
-            elif i == 'r':
-                returnTab.append(MoveDirection.RIGHT)
-            else:
-                raise ValueError(f'{i} is not legal move specification')
-        return returnTab
+
+        # oczyszczamy tablice z zlych parametrow, a nastepnie zamieniamy to na MoveDirection
+        return [MoveDirection.FORWARD if i == 'f' else MoveDirection.BACKWARD if i == 'b' else MoveDirection.RIGHT if i == 'r' else MoveDirection.LEFT for i in filter(lambda x: x in 'fblr', tab)]
 
 
 class Simulation:
