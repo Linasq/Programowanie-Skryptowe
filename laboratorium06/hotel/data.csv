@@ -1,0 +1,7 @@
+id;imie;nazwisko;pokoj;data_poczatkowa;data_koncowa
+0;Jan;Kowalski;0;2023-11-11;2023-11-13
+1;Jan;Kowalski;2;2024-01-01;2024-01-03
+2;Anna;Kowalska;2;2023-12-31;2024-01-02
+3;Anna;Kowalska;0;2024-01-03;2024-01-10
+4;Joanna;Nowak;4;2023-02-12;2023-02-22
+5;Joanna;Nowak;3;2024-12-12;2024-12-20
