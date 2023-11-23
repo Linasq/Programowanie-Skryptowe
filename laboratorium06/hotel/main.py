@@ -1,6 +1,6 @@
 #!/usr/bin/python
 
-#TODO zrobic logi i dekorator
+#TODO zrobic logi
 
 from types import NoneType
 import pandas as pd
@@ -22,10 +22,30 @@ args = parser.parse_args()
 
 # global variables
 HOTEL = h({})
-USERS={'Admin':'Admin', 'Kuba':'Admin', 'Jan':'User', 'Damian':'User'}
+USERS={'Admin':'BOG', 'Kuba':'Admin', 'Jan':'User', 'Damian':'User'}
 
 USER = args.user
 GROUP = USERS.get(USER)
+
+
+# error class
+class AccessError(Exception):
+    def __init__(self, user) -> None:
+        self.user = user
+
+    def __str__(self) -> str:
+        return f'Access denied. User {self.user} is not an admin'
+
+
+# decorator
+def user(nazwa):
+    def wrap(func):
+        def wrapper(*args, **kwargs):
+            if nazwa == 'Admin' or USERS.get(nazwa) == 'Admin': return func(*args, **kwargs)
+            raise AccessError(nazwa)
+        return wrapper
+    return wrap 
+
 
 # import csv file
 FILE = args.file
@@ -44,6 +64,7 @@ print('Lista pokoi przed rezerwacja: ', list_of_rooms, '\n')
 print('Goscie: ', list_of_guests, '\n')
 
 # book guests
+@user(USER)
 def book_guest(guest: g, room, date_start, date_end):
     guest.book(HOTEL, room, date_start, date_end)
 
@@ -60,9 +81,9 @@ match x:
         list(map(lambda x,y: book_guest(x,list_of_rooms[DATA.at[y, 'pokoj']], dt.datetime.strptime(DATA.at[y, 'data_poczatkowa'], '%Y-%m-%d').date(), dt.datetime.strptime(DATA.at[y, 'data_koncowa'], '%Y-%m-%d').date()), [g for g,i in zip(list_of_guests_duplicated, [True if i in x else False for i in range(6)]) if i], x))
 
 
-
 print('Lista pokoi po rezerwacji: ', list_of_rooms)
 
+'''
 print('\nRezerwacje poszczegolnych gosci:')
 print(list_of_guests[0])
 print(list_of_guests[1])
@@ -74,17 +95,11 @@ print(list_of_rooms[1])
 print(list_of_rooms[2])
 print(list_of_rooms[3])
 print(list_of_rooms[4])
-
-#TODO zrobic funkcyjne szukanie meneli
 '''
 
-print('\n\nNowe rzeczy:\n')
+print(f'{"#"* 10} Dodatkowe informacje {"#"*10}')
+if args.NAME:
+    HOTEL.print_reservations_name(args.NAME[0].capitalize(), args.NAME[1].capitalize())
 
-print('Szukanie po imieniu i nazwisku:\n')
-HOTEL.print_reservations_name(jo_guest.name, jo_guest.surname)
-
-print()
-
-print('Szukanie po dacie:\n')
-HOTEL.print_reservations_date(dt.date(2023, 1, 1), dt.date(2023,12,31))
-'''
+if args.DATE_RANGE:
+    HOTEL.print_reservations_date(dt.datetime.strptime(args.DATE_RANGE[0], '%Y-%m-%d').date(), dt.datetime.strptime(args.DATE_RANGE[1], '%Y-%m-%d').date())
