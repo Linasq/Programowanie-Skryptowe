@@ -1,7 +1,5 @@
 #!/usr/bin/python
 
-#TODO zrobic logi
-
 from types import NoneType
 import pandas as pd
 from typing import Final
