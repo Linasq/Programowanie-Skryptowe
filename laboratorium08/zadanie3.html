@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="pl">
+  <head>
+	<meta charset="UTF-8">
+	<title>Page title</title>
+	<script type="text/javascript">
+	  "use strict"; // Nie wyłączaj trybu ścisłego    
+	  function draw(){
+		var canvas = document.getElementById('canvas');
+		var ctx = canvas.getContext('2d');
+		ctx.fillText("Hello World", 200, 10); // naprawienie tego, co kazal polak 
+		// kolko
+		ctx.beginPath();
+		ctx.arc(canvas.width / 2, canvas.height / 2, 80, 0, 2 * Math.PI);
+		ctx.fillStyle = 'green'; 
+		ctx.fill();
+		ctx.strokeStyle = 'dark grey'; 
+		ctx.lineWidth = 3;
+		ctx.stroke();
+		ctx.closePath();
+
+		// kolko mniejsze
+		ctx.beginPath();
+		ctx.arc(canvas.width / 2, canvas.height / 2 - 23, 20, 0, 2 * Math.PI);
+		ctx.fillStyle = 'brown'; 
+		ctx.fill();
+		ctx.closePath();
+
+		// kolko wieksze
+		ctx.beginPath();
+		ctx.arc(canvas.width / 2, canvas.height / 2 + 23, 40, 0, 2 * Math.PI);
+		ctx.fillStyle = 'white'; 
+		ctx.fill();
+		ctx.closePath();
+
+		ctx.fillStyle = '#fff'; 
+		
+		// trojkat
+		ctx.beginPath();
+		ctx.moveTo(canvas.width / 2 - 20, canvas.height / 2 - 40);
+		ctx.lineTo(canvas.width / 2 + 20, canvas.height / 2 - 40);
+		ctx.lineTo(canvas.width / 2, canvas.height / 2 - 60);
+		ctx.fill();
+		ctx.closePath();
+	  }
+	</script>
+  </head>
+  <body onload="draw();">
+	<main>
+	  <h1>Płótno</h1>
+	  <canvas id="canvas" width="500" height="500" style="border:1px solid #000000;">
+		Wygląda na to, że twoja przeglądarka nie obsługuje elementu "canvas" 
+	  </canvas>
+	</main>
+  </body>
+</html>
