@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="pl">
+  <head>
+	<meta charset="UTF-8">
+	<meta name="viewport"
+		  content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css"><!-- Icons -->
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+	<title>
+	  Agroturystyka "Olszyny"
+	</title>
+	<style>
+	  .test{
+		animation: card_animation 5s infinite;
+	  }
+	   @keyframes card_animation {
+		   0% {transform: matrix(1, 0.5, 0.2, 1, 0,0);}
+		   50% {transform: matrix(1,-0.2,0,1,0,0);}
+		   100% {transform: matrix(1, 0.5, 0.2, 1, 0,0);}
+	   }
+	</style>
+  </head>
+  <body>
+	<script src="https://www.w3schools.com/lib/w3.js"></script>
+
+	<!-- div od samego headera -->
+	<div class="w3-bar w3-grey w3-large">
+	  <div class="w3-bar-item w3-text-larger w3-mobile" style="font-size: larger;"><i class="fa-solid fa-cow fa-lg"></i> <b> Agroturystyka "Olszyny"</b></div>
+
+	  <a href="#" class="w3-bar-item w3-button w3-right w3-text-grey w3-mobile" style="font-size: medium;">Zarezerwuj</a>
+
+	  <div class="w3-dropdown-click w3-right w3-mobile">
+
+		<button class="w3-button w3-text-grey" style="font-size: medium;" onclick="myFunction()">Oferta  <i class="fa fa-caret-down"></i></button>
+
+		<div id="menu" class="w3-dropdown-content w3-bar-block w3-border">
+		  <a href="#" class="w3-bar-item w3-button">Noclegi</a>
+		  <a href="#" class="w3-bar-item w3-button">Wyżywienie</a>
+		  <a href="#" class="w3-bar-item w3-button">Atrakcje</a>
+		</div>
+
+	  </div>
+	</div>
+
+	<!-- div do latajacego -->
+	<div class="w3-container w3-center test w3-mobile">
+	  <div class="w3-card w3-mobile" style="width: 33%;margin: auto;">
+		<div class=" w3-container">
+		  <img src="center_krowa.png" style="width: 100%;">
+		  <h2 class="w3-left w3-text-dark-grey">Dostępne terminy</h2>
+		  <table class="w3-table-all">
+			<thead>
+			  <tr class="w3-black">
+				<th>Miesiąc</th>
+				<th>Dni</th>
+			  </tr>
+			</thead>
+			<tr>
+			  <td>VII</td>
+			  <td>14-21, 30-31</td>
+			</tr>
+			<tr>
+			  <td>VIII</td>
+			  <td>1-12</td>
+			</tr>
+		  </table>
+		  <br>
+		  <button class="w3-button w3-round-large w3-blue w3-left w3-hover-blue">Zarezerwuj</button>
+		</div>
+	  </div>
+	</div>
+
+
+	<!-- div od prawej strony -->
+	<div class="w3-container w3-right w3-mobile" style="width: 33%;margin: auto;">
+	  <div class="w3-card">
+		<img src="ognisko.jpg" style="width: 100%;">
+		<h2 class="w3-text-dark-grey">Adres</h2>
+		<p>Olszyny 1007</p>
+		<p>32-831 Olszyny</p>
+	  </div>
+	</div>
+
+
+	<!-- div od lewej strony -->
+	<div class="w3-container w3-left w3-mobile"style="width: 33%;">
+	  <div class="w3-card">
+		<img src="ceny_noclegu.jpg" class="w3-round" style="width: 100%;">
+		<h2 class="w3-text-dark-grey">Ceny noclegu</h2>
+		<ul>
+		  <li>Pokój 1-osobowy -- 100 zł.</li>
+		  <li>Pokój 2-osobowy -- 90 zł.</li>
+		</ul>
+	  </div>
+	</div>
+
+
+	<!-- div od filmiku na dole -->
+	<div class="w3-container w3-center w3-mobile" style="width: 33%;margin: auto;">
+	  <div class="w3-card">
+		<h2 class="w3-text-dark-grey w3-left">Widok okolicy</h2>
+		<iframe width="100%" height="460px" src="https://www.youtube.com/embed/aC6avafu4ik?si=uqJejaHGfh6mHr4G" title="YouTube video player" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe>
+	  </div>
+	</div>
+
+
+	<!-- div od stopki na dole -->
+	<div class="w3-container w3-mobile" style="width: 100%;margin: auto;">
+	  <div class="w3-container w3-grey" style="width: 100%;text-align: right;">
+		<i class="fa-regular fa-copyright"></i> Jakub Liana
+	  </div>
+	  <div class="w3-container">
+		<p class="w3-text-blue" style="text-decoration: underline;">+48 123 123 123</p>
+		<a href="mailto:olszyny@tarnow.pl" class="w3-text-blue">olszyny@tarnow.pl</a>
+	  </div>
+	</div>
+
+
+	<script>
+	  function myFunction() {
+		var x = document.getElementById("menu");
+		if (x.className.indexOf("w3-show") == -1) { 
+		  x.className += " w3-show";
+		} else {
+		  x.className = x.className.replace(" w3-show", "");
+		}
+	  }
+	</script>
+
+  </body>
+</html>
