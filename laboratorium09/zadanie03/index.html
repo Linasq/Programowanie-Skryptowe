@@ -1,0 +1,175 @@
+<!DOCTYPE html>
+<html lang="en">
+
+  <head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<script src="https://unpkg.com/react/umd/react.development.js"
+			crossorigin=""></script>
+	<script src="https://unpkg.com/react-dom/umd/react-dom.development.js"
+			crossorigin=""></script>
+	<script src="https://unpkg.com/babel-standalone/babel.min.js"></script>
+
+	<title>Animation</title>
+  </head>
+
+  <body>
+
+	<div id="root"></div>
+	<script type="text/babel">
+
+	  // Komponent 'Counter'
+	  class Counter extends React.Component {
+		  constructor(props) {
+			super(props);
+
+			this.state = {
+			  count: parseInt(props.initial, 10),
+			  running: false,
+			};
+		  }
+
+	  componentDidMount() {
+		this.startCounter();
+	  }
+
+	  componentDidUpdate(prevProps, prevState) {
+		if (prevState.running !== this.state.running) {
+		  this.startCounter();
+		}
+	  }
+
+	  componentWillUnmount() {
+		clearInterval(this.intervalId);
+	  }
+
+	  startCounter() {
+		if (this.state.running) {
+		  this.intervalId = setInterval(() => {
+			this.setState(prevState => ({ count: prevState.count + 1 }));
+		  }, parseInt(this.props.delay, 10));
+		} else {
+		  clearInterval(this.intervalId);
+		}
+	  }
+
+	  handleStart = () => {
+		this.setState({ running: true });
+	  };
+
+	  handleStop = () => {
+		this.setState({ running: false });
+	  };
+
+	  render() {
+		return (
+		  <div style={{ backgroundColor: 'green', padding: '10px', margin: '10px' }}>
+			<div>Counter→</div>
+			<div style={{ color: 'red' }}>{this.state.count}</div>
+			<button onClick={this.handleStart}>Start</button>
+			<button onClick={this.handleStop}>Stop</button>
+		  </div>
+		);
+	  }
+	}
+	// Komponent 'main'
+	class Main extends React.Component {
+	  render() {
+		return (
+		  <div>
+			<Counter initial="10" delay="1000" />
+			<Counter initial="15" delay="500" />
+		  </div>
+		);
+	  }
+	}
+
+	const container = document.getElementById('root'); 
+	const root = ReactDOM.createRoot(container);       
+	root.render(<Main />);                   
+	</script>
+	<form onsubmit="event.preventDefault();">
+	  <h2>requestAnimationFrame()</h2>
+	  <label for="counter">Counter→</label>
+	  <output id="counter" style="font-size: 4vh; color: red;">0</output>
+	  <br>
+	  <button id="start" onclick="startAnimation()">Start</button>
+	  <button id="stop" disabled onclick="stopAnimation()">Stop</button>
+	  <!-- ************************************************************** -->
+	  <hr>
+	  <h2>Time-consuming calculations in the main thread</h2>
+	  <label for="result_main">Result:</label>
+	  <output id="result_main">0</output>
+	  <br>
+	  <label for="iterations_main">Number of iterations:</label>
+	  <input id="iterations_main" type="text" value="50">
+	  <button
+		  onclick="document.forms[0].result_main.value = calculatePrimes(document.forms[0].iterations_main.value || 50)">Run
+		  calculations</button>
+	  <!-- ************************************************************** -->
+	  <h2>Time-consuming calculations in a separate thread</h2>
+	  <label for="result_worker">Result:</label>
+	  <output id="result_worker">0</output>
+	  <br>
+	  <label for="iterations_worker">Number of iterations:</label>
+	  <input id="iterations_worker" type="text" value="50">
+	  <button
+		  onclick="calculatePrimesInBackground(document.forms[0].iterations_worker.value || 50)">Run
+		  calculations</button>
+	</form>
+	<script>
+	  var animation;
+	  var counter = 0;
+
+	  // Source: https://udn.realityripple.com/docs/Tools/Performance/Scenarios/Intensive_JavaScript
+	  function calculatePrimes(iterations) {
+		var primes = [];
+		for (var i = 0; i < iterations; i++) {
+		  var candidate = i * (1000000000 * Math.random());
+		  var isPrime = true;
+		  for (var c = 2; c <= Math.sqrt(candidate); ++c) {
+			if (candidate % c === 0) {
+			  // not prime
+			  isPrime = false;
+			  break;
+			}
+		  } 
+		  if (isPrime) {
+			primes.push(candidate);
+		  }
+		}
+		return primes;
+	  }
+
+	  // workers and functions
+	  const worker = new Worker('worker.js');
+
+	  // ustawia wartosc pola na to co zwroci funkcja
+	  worker.onmessage = function(mess) {
+		document.forms[0].result_worker.value = mess.data;
+	  }
+
+	  function calculatePrimesInBackground(iterations) {
+		worker.postMessage(iterations);
+	  }
+
+	  function startAnimation() {
+		document.forms[0].start.disabled = true;
+		document.forms[0].stop.disabled = false;
+		animation = window.requestAnimationFrame(step);
+	  }
+
+	  function step() {
+		document.forms[0].counter.value = counter++;
+		animation = window.requestAnimationFrame(step);
+	  }
+
+	  function stopAnimation() {
+		document.forms[0].start.disabled = false;
+		document.forms[0].stop.disabled = true;
+		window.cancelAnimationFrame(animation)
+	  }
+	</script>
+  </body>
+
+</html>
