@@ -15,6 +15,7 @@
 
   <body>
 
+	<!-- liczniki dzialajace w roznym tempie -->
 	<div id="root"></div>
 	<script type="text/babel">
 
@@ -24,30 +25,34 @@
 			super(props);
 
 			this.state = {
-			  count: parseInt(props.initial, 10),
+			  count: parseInt(props.initial),
 			  running: false,
 			};
 		  }
 
+	  // to sie wywoluje za kazdym razem gdy komponent sie zaladuje, czyli po pierwszym renderze
 	  componentDidMount() {
 		this.startCounter();
 	  }
 
+	  // to jest wywolywane po DidMount
 	  componentDidUpdate(prevProps, prevState) {
 		if (prevState.running !== this.state.running) {
 		  this.startCounter();
 		}
 	  }
 
+	  // wywolywane kiedy komponent zostaje niszczony
 	  componentWillUnmount() {
 		clearInterval(this.intervalId);
 	  }
 
+	  // metoda, ktora ustawia interval na podana z gory ilosc czasu
 	  startCounter() {
 		if (this.state.running) {
 		  this.intervalId = setInterval(() => {
 			this.setState(prevState => ({ count: prevState.count + 1 }));
-		  }, parseInt(this.props.delay, 10));
+		  }, parseInt(this.props.delay));
 		} else {
 		  clearInterval(this.intervalId);
 		}
@@ -61,24 +66,27 @@
 		this.setState({ running: false });
 	  };
 
+	  // tworzy calego poteznego diva
 	  render() {
 		return (
 		  <div style={{ backgroundColor: 'green', padding: '10px', margin: '10px' }}>
-			<div>Counter→</div>
-			<div style={{ color: 'red' }}>{this.state.count}</div>
+			<span>Counter→</span>
+			<span style={{ color: 'red', fontSize: '4vh' }}>{this.state.count}</span>
+			<br/>
 			<button onClick={this.handleStart}>Start</button>
 			<button onClick={this.handleStop}>Stop</button>
 		  </div>
 		);
 	  }
 	}
-	// Komponent 'main'
+
+	// glowny komponent, ktory sluzy do renderowania dwoch licznikow 
 	class Main extends React.Component {
 	  render() {
 		return (
 		  <div>
-			<Counter initial="10" delay="1000" />
-			<Counter initial="15" delay="500" />
+			<Counter initial="0" delay="1000" />
+			<Counter initial="0" delay="500" />
 		  </div>
 		);
 	  }
