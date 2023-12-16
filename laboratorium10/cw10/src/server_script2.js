@@ -87,7 +87,7 @@ function requestListener(request, response) {
 
 	// uposledzone liczenie dlugosci
 	let ctr = 0;
-	for (let c in tab) {ctr+=1;}
+	for (let c  in tab) {ctr+=1;}
 	ctr +=1;
 	tab[`${ctr}`] = {"name": url.searchParams.get('name'), "opis": url.searchParams.get('area')};
 

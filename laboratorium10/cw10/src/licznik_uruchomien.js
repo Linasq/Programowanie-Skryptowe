@@ -3,12 +3,28 @@ import { readFile, readFileSync, writeFile, writeFileSync } from 'node:fs';
 import {exec} from 'node:child_process';
 import readline from 'readline';
 
+/**
+ * Reads data from file synchronously,
+ * logs data from file and
+ * writes to file incremented data
+ *
+ * @author Jakub Liana
+*/
+
 function read_sync() {
   let to_print = readFileSync('licznik', 'utf8');
   console.log('Liczba uruchomień: ', to_print);
   writeFileSync('licznik', (parseInt(to_print)+1).toString());
 }
 
+
+/**
+ * Reads data from file asynchronously,
+ * logs data from file and
+ * writes to file incremented data
+ *
+ * @author Jakub Liana
+*/
 
 function read_async() {
   readFile('licznik', 'utf8',(err, data) => {
@@ -20,6 +36,15 @@ function read_async() {
 	});
   });
 }
+
+
+/**
+ * Executes command given in parameter
+ *
+ * @param {string} cmd - contains command to execute in bash
+ *
+ * @author Jakub Liana
+*/
 
 function execute_cmd(cmd) {
   exec(cmd, (err,output) => {
