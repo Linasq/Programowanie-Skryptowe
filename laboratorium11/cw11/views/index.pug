@@ -1,0 +1,34 @@
+doctype html
+html(lang='en')
+    head
+        meta(charset='utf-8')
+        meta(name='viewport' content='width=device-width, initial-scale=1')
+        title Second Express application
+        style.
+          table {
+            border-collapse: collapse;
+            width: 100%;
+          }
+          th, td {
+            border: 1px solid black;
+            padding: 8px;
+            text-align: left;
+          }
+    body
+        main
+            h1 Second Express application
+            form(method='POST' action='/')
+                label(for='name') Give your name
+                input(name='name')
+                br
+                input(type='submit')
+                input(type='reset')
+            img(src='/img/brumbrum.jpg')
+            table
+                tr
+                    th Name
+                    th Surname
+                each val in siteStudents
+                  tr
+                        td=val.fname
+                        td=val.lname
