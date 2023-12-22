@@ -1,17 +1,1 @@
-{
-"pokoj1":{
-  "price":"350",
-  "av_rooms":"1",
-  "max_rooms":"1"
-},
-"pokoj2":{
-  "price":"250",
-  "av_rooms":"3",
-  "max_rooms":"3"
-},
-"pokoj3":{
-  "price":"200",
-  "av_rooms":"2",
-  "max_rooms":"2"
-}
-}
+{"pokoj1":{"price":"350","av_rooms":1,"max_rooms":"1"},"pokoj2":{"price":"250","av_rooms":"3","max_rooms":"3"},"pokoj3":{"price":"200","av_rooms":2,"max_rooms":"2"}}

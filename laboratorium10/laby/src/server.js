@@ -3,16 +3,41 @@ import { URL } from 'node:url';
 import { readFileSync, writeFileSync } from 'node:fs'; 
 
 function dodaj_wpis(){
-  // pobranie pliku reservations.json, guests.json
+  // pobranie pliku reservations.json, guests.json, rooms.json
   var read_guest = readFileSync('guests.json', 'utf8');
   var guests = JSON.parse(read_guest);
 
   var read_res = readFileSync('reservations.json', 'utf8');
   var reservations = JSON.parse(read_res);
 
+  var read_room = readFileSync('rooms.json', 'utf8');
+  var rooms = JSON.parse(read_room);
+
   var return_str="";
-  //TODO dodac wszystkie pierdoly do stringa
-  // przemyslec co i jak wyswietlac
+  return_str+=`<div clas="w3-card w3-mobile w3-center">`
+  return_str+= `<img src="pictures/rooms.png" class="w3-round" style="width:100%; object-fit: cover;">`
+
+  for (var i = 1; i <= Object.keys(guests).length; i++) {
+	var fullname = guests[`${i}`].split(" ");
+	return_str+=`<h2>${fullname[0]} ${fullname[1]}</h2>`
+	return_str+=`<ul>`
+	for (var j = 1; j <= Object.keys(reservations).length; j++) {
+	  var reservation = reservations[`${j}`];
+	  if (reservation['name'] == fullname[0] && reservation['surname'] == fullname[1]) {
+		const date1 = new Date(reservation['date_s']);
+		const date2 = new Date(reservation['date_e']);
+		const diff_days = (date2 - date1) / (1000 * 60 * 60 * 24);
+		const price = diff_days * parseInt(rooms[`pokoj${reservation['room']}`]['price']);
+		return_str += `<li>Rezerwacja nr ${j}</li>`
+		return_str += `<ol>`;
+		return_str += `<li>Pokoj nr ${reservation['room']}</li><li>Ilosc dni: ${diff_days}</li><li>Cena: ${price}</li>`;
+		return_str += `</ol>`;
+	  }
+	}
+	return_str+=`</ul>`
+  }
+
+  return_str+=`</div>`
   return return_str;
 }
 
@@ -27,8 +52,10 @@ function dodaj_karty(){
   var return_str = "";
 
   for (let i = 1; i <= 3; i++) {
+	var cena = rooms[`pokoj${i}`]['price'];
+	var miejsce = rooms[`pokoj${i}`]['av_rooms'];
 	// utworzenie karty
-	return_str+=`<div class="w3-card w3-mobile" style="width: 33%; display: inline-block;" id="card+${i}">`
+	return_str+= miejsce != '0' ? `<div class="w3-card w3-mobile" style="width: 33%; display: inline-block;" id="card+${i}">` : `<div class="w3-card w3-mobile" style="width: 33%; display: inline-block; background-color:red;" id="card+${i}">`
 
 	// dodanie zdjecia
 	return_str+=`<img src="pictures/pokoj${i}.jpg" class="w3-round" style="width: 100%; height: 227px; object-fit: cover;">`
@@ -37,12 +64,8 @@ function dodaj_karty(){
 	return_str+=`<h2>Pokoj nr ${i}</h2>`;
 
 	// dodanie info o pokoju
-	var cena = rooms[`pokoj${i}`]['price'];
 	return_str += `<p>Cena - ${cena} </p>`
-
-	var miejsce = rooms[`pokoj${i}`]['av_rooms'];
 	return_str += `<p id="p2${i}">Wolnych miejsc - ${miejsce}</p>`;
-
 	return_str+='</div>';
   }
   return return_str;
@@ -137,23 +160,23 @@ function requestListener(request, response) {
 	  <form action="/add" method="get" id="form" class="w3-form">
 
 		<label for="name">Imie:</label>
-		<input type="text" id="name" name="input" required>
+		<input type="text" id="name" name="name" required>
 		<br>
 
 		<label for="surname">Nazwisko:</label>
-		<input type="text" id="surname" name="input" required>
+		<input type="text" id="surname" name="surname" required>
 		<br>
 
 		<label for="room">Pokoj:</label>
-		<input type="number" id="room" name="input" required>
+		<input type="number" id="room" name="room" required>
 		<br>
 
 		<label for="data_p">Data zakwaterowania:</label>
-		<input type="date" id="data_p" name="input" required>
+		<input type="date" id="data_p" name="data_p" required>
 		<br>
 
 		<label for="data_z">Data wykwaterowania:</label>
-		<input type="date" id="data_z" name="input" required>
+		<input type="date" id="data_z" name="data_z" required>
 		<br>
 
 		<button type="submit">Zarezerwuj</button>
@@ -203,21 +226,65 @@ function requestListener(request, response) {
 	response.end(file_to_load, 'binary');
   }
   /* ---------------------- */
-  /* Route "GET('/dodaj_wpis')" */
+  /* Route "GET('/add')" */
   /* ---------------------- */
-  else if (url.pathname === '/dodaj_wpis' && request.method === 'GET') {
-	// pobieramy plik json i iterujemy po nim
-	let read_json = readFileSync('wpis.json', 'utf8');
-	let tab = JSON.parse(read_json);
+  else if (url.pathname === '/add' && request.method === 'GET') {
+	// bedziemy zapisywac do guests.json, reservatoins.json oraz rooms.json
+	var read_res = readFileSync('reservations.json', 'utf8');
+	var reservations = JSON.parse(read_res);
 
-	// uposledzone liczenie dlugosci
-	let ctr = 0;
-	for (let c  in tab) {ctr+=1;}
-	ctr +=1;
-	tab[`${ctr}`] = {"name": url.searchParams.get('name'), "opis": url.searchParams.get('area')};
+	var read_g = readFileSync('guests.json', 'utf8');
+	var guests = JSON.parse(read_g);
+
+	var read_r = readFileSync('rooms.json', 'utf8');
+	var rooms = JSON.parse(read_r);
+
+	// by sie nie pieprzyc to zapisujemy do zmiennych dane z formularza
+	var name = url.searchParams.get('name');
+	var surname = url.searchParams.get('surname');
+	var room = url.searchParams.get('room');
+	var date_s = new Date(url.searchParams.get('data_p'));
+	var date_e = new Date(url.searchParams.get('data_z'));
+
+	// poczatkowa walidacja danych z formularza
+
+	console.log(`Siema mordy`);
+	console.log(room);
+	console.log(rooms[`pokoj${room}`]);
+	// sprawdzamy miejsce w pokoju
+	if (rooms[`pokoj${room}`]['av_rooms'] == '0') {console.error("Brak miejsca w danym pokoju");}
+	//sprawdzamy date
+	else if (date_e < date_s) {console.error("Data wykwaterowania wczesniejsza niz data zakwaretowania");}
+	//lecimy dalej
+	else {
+	  // sprawdzamy czy gosc juz rezerwowal cos kiedys
+	  var flag = 1;
+	  for (var i=1; i <= Object.keys(guests).length; i++){
+		if (guests[`${i}`] == `${name} ${surname}`) {
+		  flag = 0;
+		  break;
+		}
+	  }
+
+	  // dodajemy goscia
+	  if (flag) {
+		var ctr = Object.keys(guests).length + 1;
+		guests[`${ctr}`] = `${name} ${surname}`;
+	  }
+
+	  // zmiana dostepnosci pokoju
+	  rooms[`pokoj${room}`]['av_rooms'] = parseInt(rooms[`pokoj${room}`]['av_rooms']) - 1;
+
+	  // dodanie rezerwacji
+	  var ctr = Object.keys(reservations).length + 1;
+	  reservations[`${ctr}`] = {"name":name, "surname":surname, "room":room, "date_s":date_s, "date_e":date_e};
+
+	}
 
 	// zapis do pliku
-	writeFileSync('wpis.json', JSON.stringify(tab));
+	writeFileSync('guests.json', JSON.stringify(guests));
+	writeFileSync('rooms.json', JSON.stringify(rooms));
+	writeFileSync('reservations.json', JSON.stringify(reservations));
 
 	// Creating an answer header — we inform the browser that the returned data is plain text
 	response.writeHead(302, { 'Location': '/' });
