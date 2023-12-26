@@ -31,15 +31,15 @@ let students = [
       },
 ];
 
-let table = {siteStudents: students};
-
 
 /* ******** */
 /* "Routes" */
 /* ******** */
 
 app.get('/', (request, response) => {
-    response.render('index', table); // Render the 'index' view
+    const app2Running = true;
+    const app3Running = false
+    response.render('index', {app2Running, app3Running, siteStudents: students}); // Render the 'index' view
 });
 
 /* ************************************************ */

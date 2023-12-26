@@ -3,7 +3,7 @@ html(lang='en')
     head
         meta(charset='utf-8')
         meta(name='viewport' content='width=device-width, initial-scale=1')
-        title Second Express application
+        title Express application
         style.
           table {
             border-collapse: collapse;
@@ -16,7 +16,7 @@ html(lang='en')
           }
     body
         main
-            h1 Second Express application
+            h1 Express application
             form(method='POST' action='/')
                 label(for='name') Give your name
                 input(name='name')
@@ -24,7 +24,8 @@ html(lang='en')
                 input(type='submit')
                 input(type='reset')
             img(src='/img/brumbrum.jpg')
-            table
+            if app2Running
+              table
                 tr
                     th Name
                     th Surname
@@ -32,3 +33,15 @@ html(lang='en')
                   tr
                         td=val.fname
                         td=val.lname
+            else if app3Running
+              h2 Studenci
+              table
+                tr
+                    th Nazwisko
+                    th Imię
+                    th Wydział
+                each val in students
+                  tr
+                        td=val.nazwisko
+                        td=val.imie
+                        td=val.wydzial
