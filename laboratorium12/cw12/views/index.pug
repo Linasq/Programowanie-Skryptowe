@@ -189,10 +189,16 @@ html(lang='en')
                         result = response.json();
                     }
                     console.log(result);
-                    console.log(Object.keys(result));
                     console.groupEnd();   
                     if(show_alert)
-                        window.alert(result);  
+                        result.then(function (text){
+                          if(response.headers.get('content-type')?.includes('application/json')) {
+                            window.alert(JSON.stringify(text));
+                          }
+                          else {
+                            window.alert(text);
+                          }
+                        });  
                     else {
                         results.set(`fetch ${http_method} ${response_type}`, result);
                         dispatchEvent(received);
