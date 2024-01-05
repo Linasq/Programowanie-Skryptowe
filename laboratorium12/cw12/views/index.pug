@@ -19,12 +19,44 @@ html(lang='en')
             }
         script.
             /**************************************************************************************/
+            /* Function that i had to write because why not, those tasks are getting stupideroooo */
+            /**************************************************************************************/
+            function getTime(europe_city) {
+                console.log(europe_city);
+                return new Promise((resolve, reject) => {
+                    const xhr = new XMLHttpRequest();
+                    xhr.open("GET", `http://worldtimeapi.org/api/timezone/Europe/${europe_city}`, true);
+                    xhr.setRequestHeader("Accept", "application/json");
+                    xhr.addEventListener("load", () => {
+                        if (xhr.status == 200) resolve(JSON.parse(xhr.responseText));
+                        else if (xhr.status == 404) reject(xhr.responseText);
+                        else reject("There was problem other than 404");
+                    });
+                    xhr.addEventListener("error", () => {
+                        reject("There was a problem with this request.");
+                    });
+                    xhr.send();
+                });
+            }
+            function setTime(europe_city){
+                const alert = document.getElementById("alert");
+                const temp = document.getElementById("inside");
+                if (temp != null) {temp.remove();}
+                const in_div = document.createElement("div");
+                in_div.id = "inside";
+                const para = document.createElement("p");
+
+                getTime(europe_city).then(function (result) {para.textContent = JSON.stringify(result,null,"\t")})
+                .catch(function (error) {para.textContent = error});
+
+                in_div.appendChild(para);
+                alert.appendChild(in_div);
+            }
+            /**************************************************************************************/
             /* Function that retrieves the content of one of the selected text fields of the form */
             /**************************************************************************************/
             function getName(http_method){
                 let name = '';
-
-                // TODO: Here put the code that, depending on the value of the 'http_method' variable — GET / POST — assigns the 'name' variable to the value of the 'name_GET' / 'name_POST' form field
 
                 if (http_method == "GET"){
                   name = document.getElementById("name_GET").value;
@@ -61,16 +93,24 @@ html(lang='en')
                         console.log(xhr.response);
                         console.groupEnd();
                         if(show_alert) {
-                            switch (response_type){
+                          const alert = document.getElementById("alert");
+                          const temp = document.getElementById("inside");
+                          if (temp != null) {temp.remove();}
+                          const in_div = document.createElement("div");
+                          in_div.id = "inside";
+                          const para = document.createElement("p");
+                          switch (response_type){
                               case 'json':
-                                window.alert(JSON.stringify(xhr.response));
+                                para.textContent = JSON.stringify(xhr.response);
                                 break;
                               case 'document':
-                                window.alert(xhr.response.activeElement.outerHTML);
+                                para.textContent = xhr.response.activeElement.outerHTML;
                                 break;
                               default:
-                                window.alert(xhr.response);
+                                para.textContent = xhr.response;
                             }
+                          in_div.appendChild(para);
+                          alert.appendChild(in_div);
                         }
                         else { 
                             results.set(`ajax ${http_method} ${response_type}`, xhr.response);
@@ -126,7 +166,7 @@ html(lang='en')
             /* response_type ∈ ["text", "json", "xml"]                                            */ 
             /* name - Contents of the form's text box - data that needs to be sent asynchronously */
             /**************************************************************************************/
-            function requestFetchAPI(http_method, response_type, name, show_alert=false) {
+            async function requestFetchAPI(http_method, response_type, name, show_alert=false) {
                 let accept = '*/*';
                 name = encodeURIComponent(name);
 
@@ -171,8 +211,8 @@ html(lang='en')
                 //--------------------------------------------------------------------------
                 // Configuration and execution of the (asynchronous) query to the web server
                 //--------------------------------------------------------------------------
-                fetch(tmp_str, tmp) // a promise is created
-                .then(async function (response) { // if the promise is fulfilled
+                try {
+                    const response = await fetch(tmp_str, tmp);
                     if (!response.ok)
                         throw Error(response.statusText);
 
@@ -182,31 +222,38 @@ html(lang='en')
 
                     if (!response.headers.get('content-type')?.includes('application/json')) {
                         // If the received data is plain text or an XML document
-                        result = response.text(); 
+                        result = await response.text(); 
                     }
                     else {
                         //If the received data is a JSON document
-                        result = response.json();
+                        result = await response.json();
                     }
                     console.log(result);
                     console.groupEnd();   
-                    if(show_alert)
-                        result.then(function (text){
+                    if(show_alert) {
+                          const alert = document.getElementById("alert");
+                          const temp = document.getElementById("inside");
+                          if (temp != null) {temp.remove();}
+                          const in_div = document.createElement("div");
+                          in_div.id = "inside";
+                          const para = document.createElement("p");
                           if(response.headers.get('content-type')?.includes('application/json')) {
-                            window.alert(JSON.stringify(text));
+                            para.textContent = JSON.stringify(result);
                           }
                           else {
-                            window.alert(text);
+                            para.textContent = result;
                           }
-                        });  
+                          in_div.appendChild(para);
+                          alert.appendChild(in_div);
+                        } 
                     else {
                         results.set(`fetch ${http_method} ${response_type}`, result);
                         dispatchEvent(received);
                     }
-                })
-                .catch(function (error) { // if the promise is rejected
-                    window.alert(error);
-                });
+                }
+                catch (e) {
+                    window.alert(e);
+                }
             }
         script(src="https://unpkg.com/mocha/mocha.js") 
         script(type="module").
@@ -216,14 +263,17 @@ html(lang='en')
         script(class="mocha-init").
             mocha.setup('bdd');
             mocha.checkLeaks(); 
+        div(id="alert")
         main
             table
                 tr
                     th  
                     th GET
                     th POST
+                    th LEGO
                 tr 
                     th(colspan='3', style=' background-color: #04556D;') Without AJAX and Fetch API
+                    th CITY
                 tr
                     th HTTP
                     td 
@@ -238,6 +288,12 @@ html(lang='en')
                             input(type="text", id="name_POST", name="name")
                             br
                             input(type="submit", value="text")
+                    td 
+                        form(onsubmit="event.preventDefault();") 
+                            label(for="city") Your name
+                            input(type="text", id="city", name="city")
+                            br
+                            button(type="submit", onclick="setTime(document.getElementById('city').value)") Click me
                 tr 
                     th(colspan='3', style=' background-color: #04556D;')  Asynchronous requests
                 tr 
