@@ -1,0 +1,118 @@
+doctype html
+html(lang='en')
+  head
+    meta(charset='UTF-8')
+    meta(name='viewport' content='width=device-width, initial-scale=1')
+    link(rel='stylesheet' href='https://www.w3schools.com/w3css/4/w3.css')
+    link(rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css')
+    link(rel='stylesheet' href='https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css')
+    title
+      | Coraz gorsze te zadania
+    script.
+      async function bookRoom(pokoj) {
+        console.log(pokoj);
+        let accept = '*/*';
+        let name = "Jakub";
+        let surname = "Liana";
+        let data_p = prompt("Enter valid start date: ");
+        let data_z = prompt("Enter valid end date: ");
+
+        let link = 'http://localhost:8000/';
+        let body = {
+          method: "POST",
+          body: `name=${name}&surname=${surname}&room=${pokoj}&data_p=${data_p}&data_z=${data_z}`,
+          credentials: "include",
+          headers: {
+            Accept: accept,
+            'Content-type': 'application/x-www-form-urlencoded',
+          }
+        };
+
+        try {
+          const response = await fetch(link, body);
+          if (!response.ok) {
+            let err = await response.json();
+            throw Error(err.error);
+          }
+          else {window.location.reload();}
+        }
+        catch (e) {
+          window.alert(e);
+        }
+      }     
+
+  body
+    script(src='https://www.w3schools.com/lib/w3.js')
+    // div od samego headera
+    div(class="w3-bar w3-grey w3-large")
+      div(class="w3-bar-item w3-text-larger w3-mobile" style='font-size: larger;')
+        i.fa-solid.fa-cow.fa-lg
+        b  Agroturystyka "Olszyny"
+      button.w3-bar-item.w3-button.w3-hide-large.w3-hide-medium.w3-center(onclick="myFunction('demo')") &#x2630;
+      #demo.w3-dropdown-content.w3-bar-block.w3-border.w3-hide-large.w3-hide-medium
+        a.w3-bar-item.w3-button(href='#') Zarezerwuj
+        .w3-dropdown-click.w3-right.w3-mobile.w3-hide-large.w3-hide-medium
+          button.w3-button.w3-text-grey(style='font-size: medium;' onclick="myFunction('test')")
+            | Oferta  
+            i.fa.fa-caret-down
+          #test.w3-dropdown-content.w3-bar-block.w3-border
+            a.w3-bar-item.w3-button(href='#') Noclegi
+            a.w3-bar-item.w3-button(href='#') Wy&zdot;ywienie
+            a.w3-bar-item.w3-button(href='#') Atrakcje
+      a.w3-bar-item.w3-button.w3-right.w3-text-grey.w3-mobile.w3-hide-small(style='font-size: medium;') Zarezerwuj
+      a.w3-bar-item.w3-button.w3-right.w3-text-black.w3-mobile.w3-hide-small(style='font-size: medium;') Jakub Liana
+      .w3-dropdown-click.w3-right.w3-mobile.w3-hide-small
+        button.w3-button.w3-text-grey(style='font-size: medium;' onclick="myFunction('menu')")
+          | Oferta  
+          i.fa.fa-caret-down
+        #menu.w3-dropdown-content.w3-bar-block.w3-border
+          a.w3-bar-item.w3-button(href='#') Noclegi
+          a.w3-bar-item.w3-button(href='#') Wy&zdot;ywienie
+          a.w3-bar-item.w3-button(href='#') Atrakcje
+    // placeholder dla naszych kart
+    #karty.w3-container.w3-mobile
+      - for (var i = 0; i < 3; i++) 
+        - var cena = rooms[i]['price'];
+        - var miejsce = rooms[i]['av_rooms'];
+        div(class="w3-card w3-mobile" id=`card${i}` onclick=`bookRoom(${i+1})` style="width: 33%; display: inline-block;")
+          img(src=`/img/pokoj${i+1}.jpg` class="w3-round" style="width: 100%; height: 227px; object-fit: cover;")
+          h2 Pokoj nr !{i+1}
+          p Cena - !{cena}
+          p(id=`p2${i+1}`) Wolnych miejsc - !{miejsce}
+      
+    // div ktory wyswietla output dla komend: guests oraz rooms
+    #output.w3-container.w3-mobile(style='width: 33%; margin: auto;')
+      div(class="w3-card w3-mobile w3-center")
+        img(src="img/rooms.png" class="w3-round" style="width:100%; object-fit: cover;")
+
+        - for (var i = 0; i < Object.keys(guests).length; i++) 
+          - var name = guests[i]["name"];
+          - var surname = guests[i]["surname"];
+          h2 !{name} !{surname}
+          - for (var j = 0; j < Object.keys(reservations).length; j++) 
+              - var reservation = reservations[j];
+              - if (reservation['name'] == name && reservation['surname'] == surname) 
+                - const date1 = new Date(reservation['date_s']);
+                - const date2 = new Date(reservation['date_e']);
+                - const diff_days = (date2 - date1) / (1000 * 60 * 60 * 24);
+                - const price = diff_days * parseInt(rooms[parseInt(reservation['room']) - 1]['price']);
+                h4 Rezerwacja nr !{j}
+                p Pokoj nr !{reservation['room']}, Ilosc dni: !{diff_days}, Cena: !{price}
+
+    // div od stopki na dole
+    .w3-container.w3-mobile(style='width: 100%;margin: auto;')
+      .w3-container.w3-grey(style='width: 100%;text-align: right;')
+        i.fa-regular.fa-copyright
+        |  Jakub Liana
+      .w3-container
+        p.w3-text-blue(style='text-decoration: underline;') +48 123 123 123
+        a.w3-text-blue(href='mailto:olszyny@tarnow.pl') olszyny@tarnow.pl
+    script.
+      function myFunction(a) {
+        var x = document.getElementById(a);
+        if (x.className.indexOf("w3-show") == -1) {
+          x.className += " w3-show";
+        } else {
+          x.className = x.className.replace(" w3-show", "");
+        }
+      }
