@@ -235,6 +235,8 @@ app.post('/', async function (request, response) {
 	let x0 = new Date(start_date);
 	let x1 = new Date(end_date);
 	if (x0 >= x1) {update = false;}
+	if (isNaN(x0.getDate())) {update = false;}
+	if (isNaN(x1.getDate())) {update = false;}
 	for (var i = 0; i < parseInt(name.length); i++) {
 	  var l = name[i].charCodeAt();
 	  if(!((l >= 65 && l <= 90) || (l >= 97 && l <= 122))) {update = false;}
@@ -262,10 +264,9 @@ app.post('/', async function (request, response) {
 
 	// proba dodania zmiany dostepnosci pokoju
 	var avaibility = await collectionRom.find({room:room}).toArray();
-	var avaibility = parseInt(avaibility[0]['av_room']);
+	var avaibility = parseInt(avaibility[0]['av_rooms']);
 	if (avaibility == 0) {
-	  response.set('Content-Type', 'text/plain')
-	  response.send(`This room is not available anymore`);
+	  response.status(404).json({error:"This room is not available anymore"})
 	}
 	else{
 	  try {
@@ -282,8 +283,7 @@ app.post('/', async function (request, response) {
 	}
   }
   else {
-	response.set('Content-Type', 'text/plain')
-	response.send(`Hello Hecker, nice try`); // Send a response to the browser
+	response.status(404).json({error:"Hello Hecker, nice try"});
   }
 });
 
