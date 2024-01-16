@@ -2,8 +2,6 @@
  * @author Stanisław Polak <polak@agh.edu.pl>
  */ 
 
-// TODO naprawic typowanie
-
 // @deno-types="npm:@types/express@^4"
 import express, { Express, Request, Response } from "npm:express@^4";
 import morgan from "npm:morgan@^1";
@@ -18,11 +16,11 @@ app.locals.pretty = app.get('env') === 'development';
 app.use(morgan('dev'));
 app.use(express.urlencoded({ extended: false }));
 
-app.get('/', function (_req: Request, res: Request) {
+app.get('/', function (_req: Request, res: Response) {
     res.render('index', {deno_logo});
 });
 
-app.post('/', function (req: Response, res: Response) {
+app.post('/', function (req: Request, res: Response) {
     res.send(`Hello '${req.body.name}'`); 
 });
 

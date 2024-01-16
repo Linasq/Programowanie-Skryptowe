@@ -1,0 +1,9 @@
+Przed:
+- 8		High
+- 9		Medium
+- 16	Low
+
+Po:
+- 6		High
+- 9		Medium
+- 16	Low

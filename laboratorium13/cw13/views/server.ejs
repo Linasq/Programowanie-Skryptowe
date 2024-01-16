@@ -9,7 +9,7 @@
   <body>
   <div>
   <% for (const i in data.wpis) { %>
-	<% let items = wpis[i]; %>
+	<% let items = data.wpis[i]; %>
 	<h1><%= items['name'] %></h1>
 	<p><%= items['area'] %></p>
   <% } %>

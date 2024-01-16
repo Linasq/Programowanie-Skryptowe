@@ -2,15 +2,19 @@ import express from 'express';
 import morgan from 'morgan';
 import bodyParser from 'body-parser';
 import { MongoClient } from 'mongodb';
+import csurf from 'csurf';
+import helmet from 'helmet';
 
 /* *************************** */
 /* Configuring the application */
 /* *************************** */
+const csrfProtection = csurf({ cookie: true });
 const app = express();
 
 app.locals.pretty = app.get('env') === 'development'; // The resulting HTML code will be indented in the development environment
 
 /* ************************************************ */
+app.use(helmet());
 
 app.use(morgan('dev'));
 
@@ -99,7 +103,7 @@ app.get('/', async function (request, response) {
   const reservations = await collectionRes.find().toArray();
   const rooms = await collectionRom.find().toArray();
 
-
+  response.setHeader('X-Frame-Options', 'DENY');
   response.send(`
    <!DOCTYPE html>
 <html lang="pl">
@@ -227,17 +231,22 @@ app.post('/', async function (request, response) {
 
   // sprawdzanie poprawnosci danych
   if (room > 3 || room < 1) {update = false;}
-  if (new Date(start_date) > new Date(end_date)) {update = false;}
-  for (var i = 0; i < name.length; i++) {
-	var l = name[i].charCodeAt();
-	if(!((l >= 65 && l <=90) || (l >=97 && l <= 122))) {update = false;}
+  try {
+	let x0 = new Date(start_date);
+	let x1 = new Date(end_date);
+	if (x0 >= x1) {update = false;}
+	for (var i = 0; i < parseInt(name.length); i++) {
+	  var l = name[i].charCodeAt();
+	  if(!((l >= 65 && l <= 90) || (l >= 97 && l <= 122))) {update = false;}
+	}
+	for (var i = 0; i < parseInt(surname.length); i++) {
+	  var l = surname[i].charCodeAt();
+	  if(!((l >= 65 && l <= 90) || (l >= 97 && l <= 122))) {update = false;}
+	}
+  } catch (e) {
+	update = false;
   }
-  for (var i = 0; i < surname.length; i++) {
-	var l = surname[i].charCodeAt();
-	if(!((l >= 65 && l <=90) || (l >=97 && l <= 122))) {update = false;}
-  }
-
-  if (update)  {
+   if (update == true)  {
 	// polaczenie z baza danych
 	const client = new MongoClient('mongodb://127.0.0.1:27017');
 	await client.connect();
@@ -253,9 +262,7 @@ app.post('/', async function (request, response) {
 
 	// proba dodania zmiany dostepnosci pokoju
 	var avaibility = await collectionRom.find({room:room}).toArray();
-	console.log(avaibility);
-	var avaibility = avaibility[0]['room'];
-	console.log(avaibility);
+	var avaibility = parseInt(avaibility[0]['av_room']);
 	if (avaibility == 0) {
 	  response.set('Content-Type', 'text/plain')
 	  response.send(`This room is not available anymore`);

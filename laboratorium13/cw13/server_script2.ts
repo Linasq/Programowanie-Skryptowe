@@ -27,27 +27,46 @@ app.use(async (ctx, next) => {
   next();
 });
 
+
 app.use(logger.logger);
 app.use(logger.responseTime);
 
 // Passing view-engine as middleware
 app.use(viewEngine(oakAdapter, dejsEngine, { viewRoot: "./views" }));
 
+const client = new MongoClient('mongodb://127.0.0.1:27017');
+await client.connect();
+const db = client.db('ksiega_gosci');
+const collection = db.collection('wpis');
+
+// async function test(wpisy) {
+//   const x = await wpisy.toArray();
+//   return x; 
+// }
   /* ******** */
   /* "Routes" */
   /* ******** */
-
+  
   /* ---------------- */
   /* Route "GET('/')" */
   /* ---------------- */
-router.get('/', async function (ctx) {
-	const client = new MongoClient('mongodb://127.0.0.1:27017');
-	await client.connect();
-	const db = client.db('ksiega_gosci');
-	const collection = db.collection('wpis');
+router.get('/', async (ctx) => {
+	const wpisy = collection.find();
+	// console.log(wpisy);
+	// console.log(test(wpisy));
+	
+	wpisy.toArray().then( async (res) => {
+	  console.log(res);
+	  await ctx.render("server.ejs", {
+		data: { wpis:res },
+	  });
+	}).catch((e) => {
+	  console.log(e);
+	});
 
-	const wpisy = await collection.find().toArray();
-
+	// await ctx.render("index.ejs", {
+		// data: { title: "First Oak application in Deno" },
+	// });
 	await ctx.render("server.ejs", {
 	  data: { wpis:wpisy },
 	});
@@ -57,11 +76,6 @@ router.get('/', async function (ctx) {
   /* Route "POST('/')" */
   /* ---------------- */
 router.post('/', async (ctx) => {
-	const client = new MongoClient('mongodb://127.0.0.1:27017');
-	await client.connect();
-	const db = client.db('ksiega_gosci');
-	const collection = db.collection('wpis');
-
 	// collect input from form
 	const name: string = reqBodyValue.get("name") || '';
 	const wpis: string = reqBodyValue.get("area") || '';
