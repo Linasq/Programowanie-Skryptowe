@@ -16,15 +16,8 @@ let reqBodyValue: URLSearchParams;
 
 
 app.use(async (ctx, next) => {
-  // Allowing Static file to fetch from server
-  /*
-  await send(ctx, ctx.request.url.pathname, {
-    root: `${Deno.cwd()}/public`,
-  });
-  */
-  
   reqBodyValue = await ctx.request.body().value;
-  next();
+  await next();
 });
 
 
@@ -39,10 +32,6 @@ await client.connect();
 const db = client.db('ksiega_gosci');
 const collection = db.collection('wpis');
 
-// async function test(wpisy) {
-//   const x = await wpisy.toArray();
-//   return x; 
-// }
   /* ******** */
   /* "Routes" */
   /* ******** */
@@ -51,22 +40,10 @@ const collection = db.collection('wpis');
   /* Route "GET('/')" */
   /* ---------------- */
 router.get('/', async (ctx) => {
-	const wpisy = collection.find();
-	// console.log(wpisy);
-	// console.log(test(wpisy));
+	const wpisy = await collection.find().toArray();
 	
-	wpisy.toArray().then( async (res) => {
-	  console.log(res);
-	  await ctx.render("server.ejs", {
-		data: { wpis:res },
-	  });
-	}).catch((e) => {
-	  console.log(e);
-	});
+	console.log(wpisy);
 
-	// await ctx.render("index.ejs", {
-		// data: { title: "First Oak application in Deno" },
-	// });
 	await ctx.render("server.ejs", {
 	  data: { wpis:wpisy },
 	});
