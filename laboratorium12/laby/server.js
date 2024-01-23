@@ -63,7 +63,7 @@ app.post('/', async function (request, response) {
 	if(!((l >= 65 && l <=90) || (l >=97 && l <= 122))) {update = false;}
   }
 
-  if (update)  {
+  if (update == true)  {
 	// polaczenie z baza danych
 	const client = new MongoClient('mongodb://127.0.0.1:27017');
 	await client.connect();
@@ -79,7 +79,7 @@ app.post('/', async function (request, response) {
 
 	// proba dodania zmiany dostepnosci pokoju
 	var avaibility = await collectionRom.find({room:room}).toArray();
-	var avaibility = avaibility[0]['av_rooms'];
+	var avaibility = parseInt(avaibility[0]['av_rooms']);
 	if (avaibility == 0) {
 	  response.status(404).json({error:"This room is not available anymore"})
 	}
